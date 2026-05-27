@@ -308,8 +308,8 @@
       </div>
       <div class="asset-card" data-id="hvac" onclick="toggleAsset(this)">
         <i class="ti ti-wind asset-icon"></i>
-        <div class="a-name">Heating or cooling</div>
-        <div class="a-sub">Any size system</div>
+        <div class="a-name">Heat pump or smart HVAC</div>
+        <div class="a-sub">Schedulable heating & cooling</div>
       </div>
       <div class="asset-card" data-id="fridge" onclick="toggleAsset(this)">
         <i class="ti ti-snowflake asset-icon"></i>
@@ -378,7 +378,7 @@
 <script>
 const assetDefs = {
   ev:      { name:'Electric vehicles',    icon:'ti-car',              fields:[{id:'units',label:'Number of vehicles',    min:1,  max:50,  val:2,  unit:''   },{id:'kwh',  label:'Avg charge per vehicle (kWh)', min:10, max:100, val:40, unit:'kWh'},{id:'ready',label:'Ready by (hour)',           min:5,  max:12,  val:8,  unit:':00'}], savingPer:220 },
-  hvac:    { name:'Heating or cooling',   icon:'ti-wind',             fields:[{id:'kw',  label:'System capacity (kW)',   min:1,  max:200, val:10, unit:'kW' },{id:'hrs',  label:'Pre-condition window (hrs)',   min:1,  max:4,   val:1,  unit:'hrs'}],                                                       savingPer:180 },
+  hvac:    { name:'Heat pump or smart HVAC',   icon:'ti-wind',             fields:[{id:'kw',  label:'System capacity (kW)',   min:1,  max:200, val:10, unit:'kW' },{id:'hrs',  label:'Pre-condition window (hrs)',   min:1,  max:4,   val:1,  unit:'hrs'}],                                                       savingPer:180 },
   fridge:  { name:'Refrigeration',        icon:'ti-snowflake',        fields:[{id:'kw',  label:'Total load (kW)',        min:1,  max:100, val:5,  unit:'kW' },{id:'buf',  label:'Temperature buffer (°C)',      min:1,  max:5,   val:2,  unit:'°C' }],                                                       savingPer:95  },
   water:   { name:'Water heating',        icon:'ti-droplet',          fields:[{id:'kw',  label:'Heater capacity (kW)',   min:1,  max:50,  val:6,  unit:'kW' },{id:'tanks',label:'Number of tanks/boilers',      min:1,  max:10,  val:1,  unit:''   }],                                                       savingPer:75  },
   process: { name:'Equipment or machinery', icon:'ti-settings',       fields:[{id:'kw',  label:'Equipment load (kW)',    min:1,  max:500, val:15, unit:'kW' },{id:'shift',label:'Shift flexibility (hrs)',      min:1,  max:6,   val:2,  unit:'hrs'}],                                                       savingPer:310 },
@@ -576,17 +576,17 @@ function renderResults() {
 
   const insights = [];
   if (selected.has('ev'))
-    insights.push({icon:'ti-car',color:'#0F6E56',text:'<strong>EV charging is the quickest win.</strong> Overnight charging (00:00–06:00) avoids morning grid peaks entirely — whether you have one van or twenty, the timing logic is the same.'});
+    insights.push({icon:'ti-car',color:'#0F6E56',text:'<strong>EV charging is the quickest win.</strong> Overnight charging (00:00–06:00) avoids morning grid peaks entirely— whether you have one van or twenty, the timing logic is the same.'});
   if (selected.has('battery'))
-    insights.push({icon:'ti-battery-charging',color:'#1D9E75',text:'<strong>Your on-site battery is a multiplier.</strong> It stores cheap overnight power and discharges during morning peaks — effectively making every other flexible asset smarter.'});
+    insights.push({icon:'ti-battery-charging',color:'#1D9E75',text:'<strong>Your on-site battery is a multiplier.</strong> It stores cheap overnight power and discharges during morning peaks— effectively making every other flexible asset smarter.'});
   if (selected.has('hvac'))
-    insights.push({icon:'ti-wind',color:'#0F6E56',text:'<strong>Pre-conditioning is simpler than it sounds.</strong> Running your heating or cooling an hour before you need it — during a cheap window — means the building\'s thermal mass does the work through the expensive hours.'});
+    insights.push({icon:'ti-wind',color:'#0F6E56',text:'<strong>Pre-conditioning works best with heat pumps and modern systems.</strong> If your building holds temperature reasonably well, shifting your heating or cooling window 1–2 hours into a cheap generation window is a low-effort change with consistent returns— no equipment changes needed, just a schedule adjustment.'});
   if (selected.has('process'))
-    insights.push({icon:'ti-settings',color:'#854F0B',text:'<strong>Any scheduled equipment has flexibility value.</strong> Dishwashers, laundry, compressors, bakers\' ovens — the question is just: does it have to run at that exact time, or is there a window?'});
+    insights.push({icon:'ti-settings',color:'#854F0B',text:'<strong>Any scheduled equipment has flexibility value.</strong> Dishwashers, laundry, compressors, bakers\' ovens— the question is just: does it have to run at that exact time, or is there a window?'});
   if (selected.has('fridge'))
-    insights.push({icon:'ti-snowflake',color:'#0F6E56',text:'<strong>Refrigeration is easy to optimise.</strong> Fridges and freezers have natural thermal buffers — pre-cooling during cheap hours costs little and holds temperature through peak windows.'});
+    insights.push({icon:'ti-snowflake',color:'#0F6E56',text:'<strong>Refrigeration is easy to optimise.</strong> Fridges and freezers have natural thermal buffers— pre-cooling during cheap hours costs little and holds temperature through peak windows.'});
   if (selected.has('water'))
-    insights.push({icon:'ti-droplet',color:'#0F6E56',text:'<strong>Water heating is a set-and-forget win.</strong> Shift your boiler schedule 1–2 hours earlier into a cheap window. Most businesses never adjust the factory default — this one change alone is often worth £50–200/month.'});
+    insights.push({icon:'ti-droplet',color:'#0F6E56',text:'<strong>Water heating is a set-and-forget win.</strong> Shift your boiler schedule 1–2 hours earlier into a cheap window. Most businesses never adjust the factory default— this one change alone is often worth £50–200/month.'});
   if (insights.length===0)
     insights.push({icon:'ti-bulb',color:'#0F6E56',text:'<strong>Small shifts compound quickly.</strong> Even a single appliance optimised over a year adds up. The businesses saving most on RED™ tend to be the ones who treat <em>when</em> they use energy as carefully as <em>how much</em>.'});
 
