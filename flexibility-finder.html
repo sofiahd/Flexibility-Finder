@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flexibility Finder — a concept for RED™</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --tem-orange: #FF3F10;
+    --tem-orange-light: #fff0ec;
+    --green: #1D9E75;
+    --green-light: #E1F5EE;
+    --green-mid: #5DCAA5;
+    --green-dark: #085041;
+    --amber: #BA7517;
+    --amber-light: #FAEEDA;
+    --gray-50: #F8F7F4;
+    --gray-100: #EEECEA;
+    --gray-200: #D3D1C7;
+    --gray-400: #888780;
+    --gray-700: #444441;
+    --gray-900: #1A1A18;
+    --text: #1A1A18;
+    --text-secondary: #5F5E5A;
+    --text-tertiary: #888780;
+    --border: rgba(0,0,0,0.1);
+    --border-strong: rgba(0,0,0,0.18);
+    --radius: 10px;
+    --radius-lg: 14px;
+    --font: 'DM Sans', sans-serif;
+    --font-mono: 'DM Mono', monospace;
+  }
+
+  body {
+    font-family: var(--font);
+    background: var(--gray-50);
+    color: var(--text);
+    min-height: 100vh;
+    line-height: 1.6;
+  }
+
+  /* ── Cover ── */
+  .cover {
+    background: var(--gray-900);
+    color: #fff;
+    padding: 4rem 2rem 3.5rem;
+    position: relative;
+    overflow: hidden;
+    border-bottom: 3px solid var(--tem-orange);
+  }
+  .cover::before {
+    content: '';
+    position: absolute;
+    top: -80px; right: -80px;
+    width: 380px; height: 380px;
+    border-radius: 50%;
+    background: var(--tem-orange);
+    opacity: 0.15;
+  }
+  .cover::after {
+    content: '';
+    position: absolute;
+    bottom: -40px; left: 10%;
+    width: 180px; height: 180px;
+    border-radius: 50%;
+    background: var(--tem-orange);
+    opacity: 0.07;
+  }
+  .cover-inner { max-width: 680px; margin: 0 auto; position: relative; }
+  .cover-tag {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 11px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--tem-orange); border: 1px solid rgba(255,63,16,0.35);
+    padding: 4px 12px; border-radius: 20px; margin-bottom: 1.5rem;
+  }
+  .cover h1 {
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 300;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin-bottom: 1.25rem;
+    color: #fff;
+  }
+  .cover h1 em { font-style: normal; color: var(--tem-orange); }
+  .cover-body {
+    font-size: 15px; color: rgba(255,255,255,0.65);
+    max-width: 520px; line-height: 1.7; margin-bottom: 2rem;
+  }
+  .cover-meta {
+    display: flex; gap: 2rem; flex-wrap: wrap;
+    font-size: 12px; color: rgba(255,255,255,0.4);
+    border-top: 1px solid rgba(255,255,255,0.1);
+    padding-top: 1.5rem;
+  }
+  .cover-meta span { display: flex; align-items: center; gap: 5px; }
+
+  /* ── Context strip ── */
+  .context-strip {
+    background: var(--tem-orange-light);
+    border-bottom: 1px solid rgba(255,63,16,0.15);
+    padding: 1rem 2rem;
+  }
+  .context-inner {
+    max-width: 680px; margin: 0 auto;
+    display: flex; gap: 1rem; align-items: flex-start;
+  }
+  .context-icon { font-size: 16px; color: var(--tem-orange); flex-shrink: 0; margin-top: 2px; }
+  .context-text { font-size: 13px; color: #712B13; line-height: 1.5; }
+  .context-text strong { font-weight: 500; }
+
+  /* ── Main tool ── */
+  .tool-wrap {
+    max-width: 680px; margin: 0 auto;
+    padding: 2.5rem 2rem 4rem;
+  }
+
+  /* Progress */
+  .progress-bar { display: flex; gap: 6px; margin-bottom: 2.5rem; }
+  .prog { height: 3px; flex: 1; border-radius: 2px; background: var(--gray-200); transition: background 0.3s; }
+  .prog.done { background: var(--tem-orange); }
+  .prog.current { background: rgba(255,63,16,0.45); }
+
+  /* Steps */
+  .step { display: none; }
+  .step.active { display: block; animation: fadeIn 0.2s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+
+  .step-tag { font-size: 11px; font-weight: 500; letter-spacing: 0.07em; text-transform: uppercase; color: var(--tem-orange); margin-bottom: 6px; font-family: var(--font-mono); }
+  .step-title { font-size: 22px; font-weight: 400; letter-spacing: -0.01em; margin-bottom: 6px; }
+  .step-sub { font-size: 14px; color: var(--text-secondary); margin-bottom: 1.75rem; line-height: 1.6; }
+
+  /* Asset grid */
+  .asset-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; margin-bottom: 1.5rem; }
+  .asset-card {
+    background: #fff; border: 1px solid var(--border);
+    border-radius: var(--radius-lg); padding: 14px 12px 12px;
+    cursor: pointer; transition: all 0.15s; text-align: center;
+  }
+  .asset-card:hover { border-color: var(--green-mid); background: var(--green-light); }
+  .asset-card.selected { border: 2px solid var(--green); background: var(--green-light); }
+  .asset-card.selected .a-name { color: var(--green-dark); }
+  .asset-icon { font-size: 20px; color: var(--text-secondary); margin-bottom: 7px; display: block; transition: color 0.15s; }
+  .asset-card.selected .asset-icon,
+  .asset-card:hover .asset-icon { color: var(--green); }
+  .a-name { font-size: 13px; font-weight: 500; color: var(--text); }
+  .a-sub { font-size: 11px; color: var(--text-tertiary); margin-top: 2px; }
+
+  /* Config cards */
+  .config-card {
+    background: #fff; border: 1px solid var(--border);
+    border-radius: var(--radius-lg); padding: 1rem 1.25rem; margin-bottom: 10px;
+  }
+  .config-header { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; }
+  .config-icon { font-size: 16px; color: var(--green); }
+  .config-name { font-size: 14px; font-weight: 500; }
+  .field-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .field-label { font-size: 12px; color: var(--text-secondary); min-width: 150px; }
+  .field-val { font-size: 13px; font-weight: 500; font-family: var(--font-mono); min-width: 52px; text-align: right; color: var(--text); }
+  input[type=range] {
+    flex: 1; height: 4px; -webkit-appearance: none; appearance: none;
+    background: var(--gray-200); border-radius: 2px; cursor: pointer;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 16px; height: 16px;
+    border-radius: 50%; background: var(--tem-orange);
+    border: 2px solid #fff; box-shadow: 0 0 0 1px var(--tem-orange);
+  }
+
+  /* Stat grid */
+  .stat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 8px; margin-bottom: 1.5rem; }
+  .stat { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; }
+  .stat-label { font-size: 11px; color: var(--text-tertiary); margin-bottom: 4px; font-family: var(--font-mono); }
+  .stat-value { font-size: 22px; font-weight: 400; letter-spacing: -0.01em; }
+  .stat-sub { font-size: 11px; color: var(--text-tertiary); margin-top: 2px; }
+
+  /* Result cards */
+  .result-card { background: #fff; border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1rem 1.25rem; margin-bottom: 10px; }
+  .result-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+  .result-name { display: flex; align-items: center; gap: 7px; font-size: 14px; font-weight: 500; }
+  .result-icon { font-size: 15px; color: var(--green); }
+  .saving-pill {
+    font-size: 12px; font-weight: 500; font-family: var(--font-mono);
+    padding: 3px 10px; border-radius: 20px;
+    background: var(--tem-orange-light); color: #993C1D;
+  }
+  .sched-label { font-size: 11px; color: var(--text-tertiary); margin-bottom: 5px; font-family: var(--font-mono); }
+  .sched-row { display: flex; gap: 3px; }
+  .sched-block { height: 18px; flex: 1; border-radius: 2px; }
+  .time-labels { display: flex; justify-content: space-between; font-size: 10px; font-family: var(--font-mono); color: var(--text-tertiary); margin-top: 3px; }
+
+  /* Legend */
+  .legend { display: flex; gap: 14px; margin-bottom: 12px; flex-wrap: wrap; }
+  .legend-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text-secondary); font-family: var(--font-mono); }
+  .legend-dot { width: 10px; height: 10px; border-radius: 2px; }
+
+  /* Insights */
+  .insights { border-top: 1px solid var(--border); padding-top: 1rem; margin-top: 0.5rem; }
+  .insight-row { display: flex; gap: 10px; align-items: flex-start; padding: 8px 0; }
+  .insight-icon { font-size: 15px; flex-shrink: 0; margin-top: 1px; }
+  .insight-text { font-size: 13px; color: var(--text-secondary); line-height: 1.55; }
+  .insight-text strong { color: var(--text); font-weight: 500; }
+
+  /* Buttons */
+  .btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 10px 20px; border-radius: var(--radius);
+    font-family: var(--font); font-size: 14px; font-weight: 500;
+    cursor: pointer; border: 1px solid var(--border-strong);
+    background: #fff; color: var(--text); transition: all 0.15s;
+  }
+  .btn:hover { background: var(--gray-50); }
+  .btn.primary { background: var(--tem-orange); color: #fff; border-color: var(--tem-orange); }
+  .btn.primary:hover { background: #e03500; border-color: #e03500; }
+  .btn:disabled, .btn[disabled] { opacity: 0.35; pointer-events: none; }
+  .nav-row { display: flex; gap: 10px; margin-top: 1.75rem; flex-wrap: wrap; }
+
+  /* Generator card */
+  .gen-card {
+    background: #fff; border: 1px solid var(--border);
+    border-radius: var(--radius-lg); padding: 1rem 1.25rem;
+    margin-bottom: 1.25rem; display: flex; gap: 1rem; align-items: flex-start;
+  }
+  .gen-icon-wrap {
+    width: 44px; height: 44px; border-radius: var(--radius);
+    background: var(--green-light); display: flex; align-items: center;
+    justify-content: center; flex-shrink: 0;
+  }
+  .gen-icon-wrap i { font-size: 20px; color: var(--green); }
+  .gen-body { flex: 1; min-width: 0; }
+  .gen-label { font-size: 11px; font-family: var(--font-mono); color: var(--text-tertiary); margin-bottom: 3px; }
+  .gen-name { font-size: 15px; font-weight: 500; margin-bottom: 6px; }
+  .gen-meta { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 10px; }
+  .gen-pill {
+    font-size: 11px; font-family: var(--font-mono); padding: 3px 9px;
+    border-radius: 20px; border: 1px solid var(--border);
+    color: var(--text-secondary); background: var(--gray-50);
+  }
+  .gen-pill.highlight { background: var(--tem-orange-light); color: #993C1D; border-color: rgba(255,63,16,0.2); }
+  .gen-note {
+    font-size: 12px; color: var(--text-tertiary); line-height: 1.5;
+    padding: 8px 10px; background: var(--tem-orange-light);
+    border-radius: var(--radius); border-left: 2px solid var(--tem-orange);
+  }
+  .gen-note strong { color: #712B13; font-weight: 500; }
+  .gen-versa { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
+  .versa-bar-wrap { flex: 1; height: 6px; background: var(--gray-100); border-radius: 3px; overflow: hidden; }
+  .versa-bar-green { height: 100%; border-radius: 3px 0 0 3px; background: var(--green); }
+  .versa-bar-gray  { height: 100%; border-radius: 0 3px 3px 0; background: #D3D1C7; display: inline-block; }
+  .versa-label { font-size: 11px; font-family: var(--font-mono); color: var(--text-tertiary); white-space: nowrap; }
+
+  .foot {
+    text-align: center; padding: 2rem;
+    font-size: 12px; color: var(--text-tertiary);
+    border-top: 1px solid rgba(255,63,16,0.15);
+    background: var(--tem-orange-light);
+  }
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <div class="cover-inner">
+    <div class="cover-tag"><i class="ti ti-bolt"></i> Concept for RED™</div>
+    <h1>The <em>Flexibility</em><br>Finder</h1>
+    <p class="cover-body">
+      RED™ already gives businesses lower bills and transparent pricing. This tool takes the next step — helping any RED™ customer, from a small café to a large logistics site, discover which of their appliances and systems have flexible load, see what that's worth in £, and find out the best time of day to run each one.
+    </p>
+    <div class="cover-meta">
+      <span><i class="ti ti-clock" style="font-size:13px"></i> 2-minute setup</span>
+      <span><i class="ti ti-leaf" style="font-size:13px"></i> Works for any business size</span>
+      <span><i class="ti ti-trending-up" style="font-size:13px"></i> Saving on top of RED™ base saving</span>
+    </div>
+  </div>
+</div>
+
+<div class="context-strip">
+  <div class="context-inner">
+    <i class="ti ti-info-circle context-icon"></i>
+    <p class="context-text">
+      <strong>Why this exists:</strong> RED™ customers of every size have appliances and systems where <em>when</em> they run matters as much as how much they use. A café with a dishwasher, a gym with showers, a warehouse with an EV van — all have flexibility they haven't seen the value of yet. This tool finds it and puts a number on it.
+    </p>
+  </div>
+</div>
+
+<div class="tool-wrap">
+
+  <div class="progress-bar" id="progressBar">
+    <div class="prog current" id="p0"></div>
+    <div class="prog" id="p1"></div>
+    <div class="prog" id="p2"></div>
+  </div>
+
+  <!-- Step 1 -->
+  <div class="step active" id="step0">
+    <div class="step-tag">Step 1 of 3</div>
+    <div class="step-title">What flexible loads do you have?</div>
+    <div class="step-sub">Select anything that applies — big or small. These are things that need to run at some point in the day, but don't have to run right now.</div>
+    <div class="asset-grid">
+      <div class="asset-card" data-id="ev" onclick="toggleAsset(this)">
+        <i class="ti ti-car asset-icon"></i>
+        <div class="a-name">EV fleet</div>
+        <div class="a-sub">1 van or 50 trucks</div>
+      </div>
+      <div class="asset-card" data-id="hvac" onclick="toggleAsset(this)">
+        <i class="ti ti-wind asset-icon"></i>
+        <div class="a-name">Heating or cooling</div>
+        <div class="a-sub">Any size system</div>
+      </div>
+      <div class="asset-card" data-id="fridge" onclick="toggleAsset(this)">
+        <i class="ti ti-snowflake asset-icon"></i>
+        <div class="a-name">Refrigeration</div>
+        <div class="a-sub">Fridges, freezers, cold rooms</div>
+      </div>
+      <div class="asset-card" data-id="water" onclick="toggleAsset(this)">
+        <i class="ti ti-droplet asset-icon"></i>
+        <div class="a-name">Water heating</div>
+        <div class="a-sub">Boilers, tanks, showers</div>
+      </div>
+      <div class="asset-card" data-id="process" onclick="toggleAsset(this)">
+        <i class="ti ti-settings asset-icon"></i>
+        <div class="a-name">Equipment or machinery</div>
+        <div class="a-sub">Anything with a schedule</div>
+      </div>
+      <div class="asset-card" data-id="battery" onclick="toggleAsset(this)">
+        <i class="ti ti-battery-charging asset-icon"></i>
+        <div class="a-name">On-site battery</div>
+        <div class="a-sub">Storage asset</div>
+      </div>
+    </div>
+    <div class="nav-row">
+      <button class="btn primary" id="step0Next" disabled onclick="goStep(1)">Continue <i class="ti ti-arrow-right" style="font-size:13px"></i></button>
+    </div>
+  </div>
+
+  <!-- Step 2 -->
+  <div class="step" id="step1">
+    <div class="step-tag">Step 2 of 3</div>
+    <div class="step-title">Tell us a bit more</div>
+    <div class="step-sub">We use this to size your saving window and build a recommended schedule.</div>
+    <div id="configCards"></div>
+    <div class="nav-row">
+      <button class="btn" onclick="goStep(0)"><i class="ti ti-arrow-left" style="font-size:13px"></i> Back</button>
+      <button class="btn primary" onclick="goStep(2)">See my saving potential <i class="ti ti-arrow-right" style="font-size:13px"></i></button>
+    </div>
+  </div>
+
+  <!-- Step 3 -->
+  <div class="step" id="step2">
+    <div class="step-tag">Step 3 of 3</div>
+    <div class="step-title">Your flexibility saving potential</div>
+    <div class="step-sub">Based on your assets and RED™ generation data. These savings are on top of your existing RED™ bill reduction.</div>
+    <div class="stat-grid" id="summaryStats"></div>
+    <div id="generatorCard"></div>
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:#1D9E75"></div> Green window — run here</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#BA7517"></div> Costly window — avoid if possible</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#D3D1C7"></div> Off / not scheduled</div>
+    </div>
+    <div id="resultCards"></div>
+    <div class="insights" id="insightsBox"></div>
+    <div class="nav-row">
+      <button class="btn" onclick="goStep(1)"><i class="ti ti-arrow-left" style="font-size:13px"></i> Edit assets</button>
+      <button class="btn" onclick="window.print()"><i class="ti ti-printer" style="font-size:13px"></i> Print / save PDF</button>
+    </div>
+  </div>
+
+</div>
+
+<div class="foot">
+  A concept prototype exploring flexible load scheduling for RED™ customers — from small independents to large multi-site businesses. Savings are illustrative, based on typical UK business energy profiles and average half-hourly price spreads.
+</div>
+
+<script>
+const assetDefs = {
+  ev:      { name:'Electric vehicles',    icon:'ti-car',              fields:[{id:'units',label:'Number of vehicles',    min:1,  max:50,  val:2,  unit:''   },{id:'kwh',  label:'Avg charge per vehicle (kWh)', min:10, max:100, val:40, unit:'kWh'},{id:'ready',label:'Ready by (hour)',           min:5,  max:12,  val:8,  unit:':00'}], savingPer:220 },
+  hvac:    { name:'Heating or cooling',   icon:'ti-wind',             fields:[{id:'kw',  label:'System capacity (kW)',   min:1,  max:200, val:10, unit:'kW' },{id:'hrs',  label:'Pre-condition window (hrs)',   min:1,  max:4,   val:1,  unit:'hrs'}],                                                       savingPer:180 },
+  fridge:  { name:'Refrigeration',        icon:'ti-snowflake',        fields:[{id:'kw',  label:'Total load (kW)',        min:1,  max:100, val:5,  unit:'kW' },{id:'buf',  label:'Temperature buffer (°C)',      min:1,  max:5,   val:2,  unit:'°C' }],                                                       savingPer:95  },
+  water:   { name:'Water heating',        icon:'ti-droplet',          fields:[{id:'kw',  label:'Heater capacity (kW)',   min:1,  max:50,  val:6,  unit:'kW' },{id:'tanks',label:'Number of tanks/boilers',      min:1,  max:10,  val:1,  unit:''   }],                                                       savingPer:75  },
+  process: { name:'Equipment or machinery', icon:'ti-settings',       fields:[{id:'kw',  label:'Equipment load (kW)',    min:1,  max:500, val:15, unit:'kW' },{id:'shift',label:'Shift flexibility (hrs)',      min:1,  max:6,   val:2,  unit:'hrs'}],                                                       savingPer:310 },
+  battery: { name:'On-site battery',      icon:'ti-battery-charging', fields:[{id:'kwh', label:'Storage capacity (kWh)', min:5,  max:500, val:30, unit:'kWh'},{id:'kw',  label:'Power rating (kW)',             min:2,  max:250, val:10, unit:'kW' }],                                                       savingPer:420 },
+};
+
+const scheduleProfiles = {
+  ev:      [1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1],
+  hvac:    [0,0,0,0,0,0,1,1,1,0,0,1,1,1,0,0,0,1,0,0,0,0,0,0],
+  fridge:  [1,1,1,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,1,1,1,1],
+  water:   [1,1,1,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,1,1,0,0],
+  process: [0,0,0,0,0,0,0,0,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0],
+  battery: [1,1,1,1,1,1,0,0,0,0,1,1,1,1,0,0,0,0,0,0,1,1,1,1],
+};
+
+const greenHours  = new Set([0,1,2,3,4,5,10,11,12,13,20,21,22,23]);
+const costlyHours = new Set([7,8,9,16,17,18,19]);
+
+let selected  = new Set();
+let fieldVals = {};
+
+function toggleAsset(el) {
+  const id = el.dataset.id;
+  selected.has(id) ? selected.delete(id) : selected.add(id);
+  el.classList.toggle('selected', selected.has(id));
+  document.getElementById('step0Next').disabled = selected.size === 0;
+}
+
+function goStep(n) {
+  document.querySelectorAll('.step').forEach((s,i) => s.classList.toggle('active', i===n));
+  [0,1,2].forEach(i => {
+    document.getElementById('p'+i).className = 'prog' + (i<n?' done':i===n?' current':'');
+  });
+  if (n===1) renderConfig();
+  if (n===2) renderResults();
+}
+
+function renderConfig() {
+  const c = document.getElementById('configCards');
+  c.innerHTML = '';
+  selected.forEach(id => {
+    const def = assetDefs[id];
+    const div = document.createElement('div');
+    div.className = 'config-card';
+    div.innerHTML = `<div class="config-header"><i class="ti ${def.icon} config-icon"></i><span class="config-name">${def.name}</span></div>` +
+      def.fields.map(f => {
+        const k = id+'_'+f.id;
+        if (fieldVals[k]==null) fieldVals[k] = f.val;
+        return `<div class="field-row">
+          <span class="field-label">${f.label}</span>
+          <input type="range" min="${f.min}" max="${f.max}" step="1" value="${fieldVals[k]}"
+            oninput="fieldVals['${k}']=+this.value; document.getElementById('fv_${k}').textContent=this.value+'${f.unit}'" />
+          <span class="field-val" id="fv_${k}">${fieldVals[k]}${f.unit}</span>
+        </div>`;
+      }).join('');
+    c.appendChild(div);
+  });
+}
+
+function calcSaving(id) {
+  const def = assetDefs[id];
+  const fv = k => fieldVals[id+'_'+k] ?? def.fields.find(f=>f.id===k)?.val ?? 1;
+  const m = {
+    ev:      () => (fv('units')/10) * (fv('kwh')/60),
+    hvac:    () => fv('kw')/40,
+    fridge:  () => fv('kw')/20,
+    water:   () => (fv('kw')/12) * (fv('tanks')/3),
+    process: () => fv('kw')/80,
+    battery: () => fv('kwh')/100,
+  }[id]?.() ?? 1;
+  return Math.round(def.savingPer * m);
+}
+
+const generatorProfiles = [
+  {
+    type: 'wind',
+    icon: 'ti-wind',
+    name: 'Wind farm — North Yorkshire',
+    peakWindow: '22:00–07:00',
+    peakDesc: 'overnight & early morning',
+    coveragePct: 91,
+    note: 'Wind generation is strongest overnight and in early morning, particularly in winter. Your flexible loads scheduled into this window draw almost entirely from matched renewable generation — no top-up needed.',
+  },
+  {
+    type: 'solar',
+    icon: 'ti-sun',
+    name: 'Solar array — Kent',
+    peakWindow: '09:00–15:00',
+    peakDesc: 'mid-morning to mid-afternoon',
+    coveragePct: 88,
+    note: 'Solar peaks between 10:00–14:00 in summer, shifting slightly earlier in winter. Loads scheduled into this window align closely with your matched generator\'s output — minimising the need for third-party balancing.',
+  },
+  {
+    type: 'hydro',
+    icon: 'ti-ripple',
+    name: 'Run-of-river hydro — Scottish Highlands',
+    peakWindow: '00:00–23:59',
+    peakDesc: 'consistent throughout the day',
+    coveragePct: 95,
+    note: 'Hydro generation is remarkably stable across the day, making it the most schedule-flexible renewable source. Almost any window you choose will align well with your generator — giving you maximum freedom to shift loads.',
+  },
+  {
+    type: 'wind',
+    icon: 'ti-wind',
+    name: 'Offshore wind — East Anglia',
+    peakWindow: '18:00–09:00',
+    peakDesc: 'evenings through to morning',
+    coveragePct: 93,
+    note: 'Offshore wind generates most strongly in the evening and overnight, often peaking after midnight. Scheduling your flexible loads into the evening and overnight window keeps you tightly matched to this generator.',
+  },
+  {
+    type: 'solar',
+    icon: 'ti-sun',
+    name: 'Rooftop solar portfolio — Midlands',
+    peakWindow: '10:00–16:00',
+    peakDesc: 'mid-morning to late afternoon',
+    coveragePct: 82,
+    note: 'Distributed rooftop solar has a slightly broader generation window than utility-scale solar. Loads run between 10:00 and 16:00 capture the majority of output — with the midday hours giving the closest match.',
+  },
+];
+
+let assignedGenerator = null;
+
+function renderGenerator(gen) {
+  const versaPct = 100 - gen.coveragePct;
+  document.getElementById('generatorCard').innerHTML = `
+    <div class="gen-card">
+      <div class="gen-icon-wrap"><i class="ti ${gen.icon}"></i></div>
+      <div class="gen-body">
+        <div class="gen-label">Your matched generator</div>
+        <div class="gen-name">${gen.name}</div>
+        <div class="gen-meta">
+          <span class="gen-pill highlight"><i class="ti ti-clock" style="font-size:11px; vertical-align:-1px; margin-right:3px"></i>Peak: ${gen.peakWindow}</span>
+          <span class="gen-pill">${gen.coveragePct}% of your load covered</span>
+          <span class="gen-pill">${versaPct}% third-party top-up</span>
+        </div>
+        <div class="gen-versa">
+          <div class="versa-bar-wrap">
+            <div style="display:flex; height:100%; border-radius:3px; overflow:hidden;">
+              <div style="width:${gen.coveragePct}%; background:#1D9E75; border-radius:3px 0 0 3px;"></div>
+              <div style="width:${versaPct}%; background:#D3D1C7; border-radius:0 3px 3px 0;"></div>
+            </div>
+          </div>
+          <span class="versa-label">${versaPct}% balanced externally</span>
+        </div>
+        <div class="gen-note" style="margin-top:10px;">
+          ${gen.note}
+          <br><br>
+          <strong>In production:</strong> this schedule would be driven by your generator's day-ahead forecast from RED™'s pricing engine — not illustrative data. No other supplier can offer this because no other supplier has the direct generator-to-customer match that RED™ is built on.
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderResults() {
+  let total = 0;
+  selected.forEach(id => total += calcSaving(id));
+
+  assignedGenerator = generatorProfiles[Math.floor(Math.random() * generatorProfiles.length)];
+
+  document.getElementById('summaryStats').innerHTML = `
+    <div class="stat"><div class="stat-label">Monthly saving</div><div class="stat-value">£${total.toLocaleString()}</div><div class="stat-sub">from load shifting</div></div>
+    <div class="stat"><div class="stat-label">Annual saving</div><div class="stat-value">£${(total*12).toLocaleString()}</div><div class="stat-sub">on top of RED™ base</div></div>
+    <div class="stat"><div class="stat-label">Green match</div><div class="stat-value">${Math.min(92,55+selected.size*5)}%</div><div class="stat-sub">up from ~38% unmanaged</div></div>
+    <div class="stat"><div class="stat-label">Assets found</div><div class="stat-value">${selected.size}</div><div class="stat-sub">flexible loads</div></div>
+  `;
+
+  renderGenerator(assignedGenerator);
+
+  const rc = document.getElementById('resultCards');
+  rc.innerHTML = '';
+  selected.forEach(id => {
+    const def = assetDefs[id];
+    const saving = calcSaving(id);
+    const profile = scheduleProfiles[id];
+    const blocks = profile.map((on,h) => {
+      const color = on ? (greenHours.has(h) ? '#1D9E75' : costlyHours.has(h) ? '#BA7517' : '#5DCAA5') : '#D3D1C7';
+      const opacity = on ? 1 : 0.35;
+      return `<div class="sched-block" style="background:${color};opacity:${opacity}" title="${String(h).padStart(2,'0')}:00"></div>`;
+    }).join('');
+    const div = document.createElement('div');
+    div.className = 'result-card';
+    div.innerHTML = `
+      <div class="result-header">
+        <div class="result-name"><i class="ti ${def.icon} result-icon"></i>${def.name}</div>
+        <span class="saving-pill">£${saving.toLocaleString()}/mo</span>
+      </div>
+      <div class="sched-label">Recommended 24hr schedule</div>
+      <div class="sched-row">${blocks}</div>
+      <div class="time-labels"><span>00:00</span><span>06:00</span><span>12:00</span><span>18:00</span><span>23:00</span></div>
+    `;
+    rc.appendChild(div);
+  });
+
+  const insights = [];
+  if (selected.has('ev'))
+    insights.push({icon:'ti-car',color:'#0F6E56',text:'<strong>EV charging is the quickest win.</strong> Overnight charging (00:00–06:00) avoids morning grid peaks entirely — whether you have one van or twenty, the timing logic is the same.'});
+  if (selected.has('battery'))
+    insights.push({icon:'ti-battery-charging',color:'#1D9E75',text:'<strong>Your on-site battery is a multiplier.</strong> It stores cheap overnight power and discharges during morning peaks — effectively making every other flexible asset smarter.'});
+  if (selected.has('hvac'))
+    insights.push({icon:'ti-wind',color:'#0F6E56',text:'<strong>Pre-conditioning is simpler than it sounds.</strong> Running your heating or cooling an hour before you need it — during a cheap window — means the building\'s thermal mass does the work through the expensive hours.'});
+  if (selected.has('process'))
+    insights.push({icon:'ti-settings',color:'#854F0B',text:'<strong>Any scheduled equipment has flexibility value.</strong> Dishwashers, laundry, compressors, bakers\' ovens — the question is just: does it have to run at that exact time, or is there a window?'});
+  if (selected.has('fridge'))
+    insights.push({icon:'ti-snowflake',color:'#0F6E56',text:'<strong>Refrigeration is easy to optimise.</strong> Fridges and freezers have natural thermal buffers — pre-cooling during cheap hours costs little and holds temperature through peak windows.'});
+  if (selected.has('water'))
+    insights.push({icon:'ti-droplet',color:'#0F6E56',text:'<strong>Water heating is a set-and-forget win.</strong> Shift your boiler schedule 1–2 hours earlier into a cheap window. Most businesses never adjust the factory default — this one change alone is often worth £50–200/month.'});
+  if (insights.length===0)
+    insights.push({icon:'ti-bulb',color:'#0F6E56',text:'<strong>Small shifts compound quickly.</strong> Even a single appliance optimised over a year adds up. The businesses saving most on RED™ tend to be the ones who treat <em>when</em> they use energy as carefully as <em>how much</em>.'});
+
+  document.getElementById('insightsBox').innerHTML =
+    insights.map(i=>`<div class="insight-row"><i class="ti ${i.icon} insight-icon" style="color:${i.color}"></i><p class="insight-text">${i.text}</p></div>`).join('');
+}
+</script>
+</body>
+</html>
